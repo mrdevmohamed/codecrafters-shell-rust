@@ -14,10 +14,7 @@ fn main() {
         match parts.next() {
             Some("exit") => process::exit(0),
             Some("echo") => {
-                for part in parts {
-                    print!("{part}")
-                }
-                print!("\n")
+                print!("{}\n", parts.collect::<Vec<&str>>().join(" "))
             }
             Some(cmd) => println!("{cmd}: command not found"),
             None => {}
