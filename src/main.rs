@@ -10,11 +10,17 @@ fn main() {
         let mut command = String::new();
         io::stdin().read_line(&mut command).unwrap();
 
-        let command = command.trim().split(" ")
-        match command {
-            "exit" => process::exit(0),
-            "echo" => {}
-            &_ => println!("{}: command not found", command.trim()),
+        let mut parts = command.trim().split_whitespace();
+        match parts.next() {
+            Some("exit") => process::exit(0),
+            Some("echo") => {
+                for part in parts {
+                    print!("{part}")
+                }
+                print!("\n")
+            }
+            Some(cmd) => println!("{cmd}: command not found"),
+            None => {}
         }
     }
 }
