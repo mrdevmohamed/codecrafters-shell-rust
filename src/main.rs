@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::process::{self};
 
 fn main() {
-    const SHELL_BUILTIN: [&str; 2] = ["echo", "exit"];
+    const SHELL_BUILTIN: [&str; 3] = ["echo", "exit", "type"];
     loop {
         print!("$ ");
         io::stdout().flush().unwrap();
