@@ -7,9 +7,19 @@ use std::process::{self, Command};
 const SHELL_BUILTIN: [&str; 5] = ["echo", "exit", "type", "pwd", "cd"];
 
 fn change_directory(path: &str) {
-    let directory = Path::new(path);
+    let directory: PathBuf = if path == "~" {
+        match env::home_dir() {
+            Some(home) => home,
+            None => {
+                eprintln!("cd: unable to determine home directory");
+                return;
+            }
+        }
+    } else {
+        PathBuf::from(path)
+    };
 
-    if let Err(_) = env::set_current_dir(directory) {
+    if let Err(_) = env::set_current_dir(&directory) {
         println!("cd: {path}: No such file or directory");
     }
 }
