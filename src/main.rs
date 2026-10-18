@@ -86,8 +86,20 @@ fn parse_command(input: &str) -> Vec<String> {
     let mut args = Vec::new();
     let mut current = String::new();
     let mut quote: Option<char> = None;
+    let mut escaped = false;
 
     for c in input.trim().chars() {
+        if escaped {
+            current.push(c);
+            escaped = false;
+            continue;
+        }
+
+        if c == '\\' && quote.is_none() {
+            escaped = true;
+            continue;
+        }
+
         match c {
             '\'' | '"' if quote == Some(c) => {
                 quote = None;
@@ -102,6 +114,10 @@ fn parse_command(input: &str) -> Vec<String> {
             }
             _ => current.push(c),
         }
+    }
+
+    if escaped {
+        current.push('\\');
     }
 
     if !current.is_empty() {
