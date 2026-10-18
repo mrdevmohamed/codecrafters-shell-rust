@@ -3,6 +3,7 @@ use std::io::{self, Write};
 use std::process::{self};
 
 fn main() {
+    const SHELL_BUILTIN: [&str; 2] = ["echo", "exit"];
     loop {
         print!("$ ");
         io::stdout().flush().unwrap();
@@ -16,6 +17,20 @@ fn main() {
             Some("echo") => {
                 print!("{}\n", parts.collect::<Vec<&str>>().join(" "))
             }
+            Some("type") => match parts.next() {
+                Some(target) => {
+                    let result = SHELL_BUILTIN
+                        .iter()
+                        .copied()
+                        .find(|&command| command == target);
+
+                    match result {
+                        Some(command) => println!("{command} is a shell builtin"),
+                        None => println!("{target}: not found"),
+                    }
+                }
+                None => println!("type: missing command name"),
+            },
             Some(cmd) => println!("{cmd}: command not found"),
             None => {}
         }
