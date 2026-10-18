@@ -51,18 +51,13 @@ fn command_type(command: &str) {
 }
 
 fn run_external(command: &str, args: &[&str]) {
-    let Some(path) = find_executable(command) else {
+    if find_executable(command).is_none() {
         println!("{command}: command not found");
         return;
-    };
+    }
 
-    match Command::new(path).args(args).status() {
-        Ok(status) => {
-            if let Some(code) = status.code() {
-                // Preserve the external program's exit status.
-                let _ = code;
-            }
-        }
+    match Command::new(command).args(args).status() {
+        Ok(_) => {}
         Err(error) => {
             eprintln!("{command}: {error}");
         }
