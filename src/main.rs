@@ -1,10 +1,11 @@
 use std::env;
 use std::fs;
 use std::io::{self, Write};
+use std::path;
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
-const SHELL_BUILTIN: [&str; 3] = ["echo", "exit", "type"];
+const SHELL_BUILTIN: [&str; 4] = ["echo", "exit", "type", "pwd"];
 
 fn find_executable(command: &str) -> Option<PathBuf> {
     let path = env::var_os("PATH")?;
@@ -95,6 +96,11 @@ fn main() {
             Some("type") => match parts.next() {
                 Some(target) => command_type(target),
                 None => println!("type: missing command name"),
+            },
+
+            Some("pwd") => match env::current_dir() {
+                Ok(path) => println!("{}", path.display()),
+                Err(error) => eprintln!("pwd: {error}"),
             },
 
             Some(command) => {
