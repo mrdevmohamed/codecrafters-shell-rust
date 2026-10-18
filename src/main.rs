@@ -1,11 +1,18 @@
 use std::env;
 use std::fs;
 use std::io::{self, Write};
-use std::path;
 use std::path::{Path, PathBuf};
 use std::process::{self, Command};
 
-const SHELL_BUILTIN: [&str; 4] = ["echo", "exit", "type", "pwd"];
+const SHELL_BUILTIN: [&str; 5] = ["echo", "exit", "type", "pwd", "cd"];
+
+fn change_directory(path: &str) {
+    let directory = Path::new(path);
+
+    if let Err(_) = env::set_current_dir(directory) {
+        println!("cd: {path}: No such file or directory");
+    }
+}
 
 fn find_executable(command: &str) -> Option<PathBuf> {
     let path = env::var_os("PATH")?;
@@ -101,6 +108,11 @@ fn main() {
             Some("pwd") => match env::current_dir() {
                 Ok(path) => println!("{}", path.display()),
                 Err(error) => eprintln!("pwd: {error}"),
+            },
+
+            Some("cd") => match parts.next() {
+                Some(path) => change_directory(path),
+                None => eprintln!("cd: missing directory"),
             },
 
             Some(command) => {
