@@ -90,14 +90,28 @@ fn parse_command(input: &str) -> Vec<String> {
 
     for c in input.trim().chars() {
         if escaped {
+            if quote == Some('"') && !matches!(c, '"' | '\\' | '$' | '`') {
+                current.push('\\');
+            }
+
             current.push(c);
             escaped = false;
             continue;
         }
 
-        if c == '\\' && quote.is_none() {
-            escaped = true;
-            continue;
+        if c == '\\' {
+            match quote {
+                None => {
+                    escaped = true;
+                    continue;
+                }
+                Some('"') => {
+                    escaped = true;
+                    continue;
+                }
+                Some('\'') => {}
+                _ => {}
+            }
         }
 
         match c {
