@@ -82,6 +82,35 @@ fn run_external(command: &str, args: &[&str]) {
     }
 }
 
+fn parse_command(input: &str) -> Vec<String> {
+    let mut args = Vec::new();
+    let mut current = String::new();
+    let mut quote: Option<char> = None;
+
+    for c in input.trim().chars() {
+        match c {
+            '\'' | '"' if quote == Some(c) => {
+                quote = None;
+            }
+            '\'' | '"' if quote.is_none() => {
+                quote = Some(c);
+            }
+            c if c.is_whitespace() && quote.is_none() => {
+                if !current.is_empty() {
+                    args.push(std::mem::take(&mut current));
+                }
+            }
+            _ => current.push(c),
+        }
+    }
+
+    if !current.is_empty() {
+        args.push(current);
+    }
+
+    args
+}
+
 fn main() {
     loop {
         print!("$ ");
@@ -100,8 +129,8 @@ fn main() {
                 break;
             }
         }
-
-        let mut parts = input.split_whitespace();
+        let parsed = parse_command(&input);
+        let mut parts = parsed.iter().map(String::as_str);
 
         match parts.next() {
             Some("exit") => process::exit(0),
