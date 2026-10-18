@@ -10,8 +10,10 @@ fn main() {
         let mut command = String::new();
         io::stdin().read_line(&mut command).unwrap();
 
-        match command.trim() {
+        let command = command.trim().split(" ")
+        match command {
             "exit" => process::exit(0),
+            "echo" => {}
             &_ => println!("{}: command not found", command.trim()),
         }
     }
